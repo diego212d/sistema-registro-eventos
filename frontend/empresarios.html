@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro FESPA Mexico 2026</title>
+    <link rel="stylesheet" href="../css/styleempre.css">
+</head>
+
+<body>
+
+    <div class="form-container">
+        <div class="header-banner">
+            <h1>Formulario de Registro de Visitante</h1>
+            <p>Esta información aparecerá impresa en tu gafete de visitante para que puedas acceder y formar parte de
+                las actividades de FESPA Mexico 2026.</p>
+        </div>
+        <div class="notice-bar">Los campos marcados con el * son obligatorios</div>
+
+        <form action="/registro_empresario" method="POST" onsubmit="return verificarFormulario(event)">
+
+            <!-- SECCIÓN 1: DATOS PERSONALES -->
+            <div class="section-title">Datos Personales</div>
+
+            <div class="row">
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="nombre">*Nombre</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="apellido_paterno">*Apellido Paterno</label>
+                        <input type="text" id="apellido_paterno" name="apellido_paterno" required>
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="apellido_materno">Apellido Materno</label>
+                        <input type="text" id="apellido_materno" name="apellido_materno">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="cargo">Cargo</label>
+                        <input type="text" id="cargo" name="cargo">
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="empresa">*Empresa</label>
+                        <input type="text" id="empresa" name="empresa" required>
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="lada_pais">Lada País</label>
+                        <select id="lada_pais" name="lada_pais">
+                            <option value="+52">+52 (México)</option>
+                            <option value="+1">+1 (USA / Canadá)</option>
+                            <option value="+34">+34 (España)</option>
+                            <option value="+57">+57 (Colombia)</option>
+                            <option value="+54">+54 (Argentina)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="telefono">*Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono" required>
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="pais">*País</label>
+                        <select id="pais" name="pais" required>
+                            <option value="MEXICO" selected>MÉXICO</option>
+                            <option value="USA">ESTADOS UNIDOS</option>
+                            <option value="COLOMBIA">COLOMBIA</option>
+                            <option value="OTRO">OTRO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col w-33">
+                    <div class="field-group">
+                        <label for="codigo_postal">*Código Postal (Seleccione su código postal)</label>
+                        <input type="text" id="codigo_postal" name="codigo_postal" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col w-50">
+                    <div class="field-group">
+                        <label for="ciudad">*Ciudad</label>
+                        <input type="text" id="ciudad" name="ciudad" required>
+                    </div>
+                </div>
+                <div class="col w-50">
+                    <div class="field-group">
+                        <label for="calle_numero">Calle y número</label>
+                        <input type="text" id="calle_numero" name="calle_numero">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col w-100">
+                    <div class="field-group">
+                        <label for="email" style="font-weight: bold; color: #0b2c70;">*Email</label>
+                        <input type="email" id="email" name="email" required
+                            style="border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- SECCIÓN 2: PERFIL PROFESIONAL Y ENCUESTA -->
+            <div class="section-title">Perfil de la Empresa e Intereses</div>
+
+            <!-- Pregunta 1: Posición (Select Dropdown) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuál es tu posición en la empresa?</label>
+                <div class="field-group">
+                    <select name="posicion_empresa" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="Propietario/ Director/ Socio/ Director General">Propietario/ Director/ Socio/
+                            Director General</option>
+                        <option value="Gerente">Gerente</option>
+                        <option value="Ejecutivo / Asistente">Ejecutivo / Asistente</option>
+                        <option value="Estudiante / Practicante">Estudiante / Practicante</option>
+                        <option value="Consultor">Consultor</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pregunta 2: Área de responsabilidad (Radios de una sola opción) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuál es tu área de responsabilidad?</label>
+                <div class="options-grid">
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_compras" name="area_responsabilidad"
+                                value="Compras" required><label for="resp_compras">Compras</label></div>
+                        <div class="option-item"><input type="radio" id="resp_desarrollo" name="area_responsabilidad"
+                                value="Desarrollo de negocios"><label for="resp_desarrollo">Desarrollo de
+                                negocios</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_diseno" name="area_responsabilidad"
+                                value="Diseño"><label for="resp_diseno">Diseño</label></div>
+                        <div class="option-item"><input type="radio" id="resp_diseno_int" name="area_responsabilidad"
+                                value="Diseño de interiores - Arquitecto"><label for="resp_diseno_int">Diseño de
+                                interiores - Arquitecto</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_empaque" name="area_responsabilidad"
+                                value="Empaque y etiqueta"><label for="resp_empaque">Empaque y etiqueta</label></div>
+                        <div class="option-item"><input type="radio" id="resp_marketing" name="area_responsabilidad"
+                                value="Marketing"><label for="resp_marketing">Marketing</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_operaciones" name="area_responsabilidad"
+                                value="Operaciones"><label for="resp_operaciones">Operaciones</label></div>
+                        <div class="option-item"><input type="radio" id="resp_planeacion" name="area_responsabilidad"
+                                value="Planeación"><label for="resp_planeacion">Planeación</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_produccion" name="area_responsabilidad"
+                                value="Producción - Instalación"><label for="resp_produccion">Producción -
+                                Instalación</label></div>
+                        <div class="option-item"><input type="radio" id="resp_ventas" name="area_responsabilidad"
+                                value="Ventas"><label for="resp_ventas">Ventas</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="radio" id="resp_otro" name="area_responsabilidad"
+                                value="Otro"><label for="resp_otro">Otro</label></div>
+                        <div class="option-item"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pregunta 3: Sector de la industria (Checkboxes máximo 2) -->
+            <div class="question-block">
+                <label class="question-label">¿A qué sector de la industria pertenece tu empresa?</label>
+                <div class="badge-info">Sólo pueden seleccionar máximo 2</div>
+                <div class="options-grid">
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="sector_industria"
+                                value="Decoración de Interiores" id="sec_decoracion"><label
+                                for="sec_decoracion">Decoración de Interiores</label></div>
+                        <div class="option-item"><input type="checkbox" name="sector_industria"
+                                value="Empaque y etiqueta" id="sec_empaque"><label for="sec_empaque">Empaque y
+                                etiqueta</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="sector_industria"
+                                value="Industria gráfica" id="sec_grafica"><label for="sec_grafica">Industria
+                                gráfica</label></div>
+                        <div class="option-item"><input type="checkbox" name="sector_industria" value="Industria Textil"
+                                id="sec_textil"><label for="sec_textil">Industria Textil</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="sector_industria" value="Impresión 3D"
+                                id="sec_3d"><label for="sec_3d">Impresión 3D</label></div>
+                        <div class="option-item"><input type="checkbox" name="sector_industria" value="Señalización"
+                                id="sec_senalizacion"><label for="sec_senalizacion">Señalización</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="sector_industria" value="Personalización"
+                                id="sec_personalizacion"><label for="sec_personalizacion">Personalización</label></div>
+                        <div class="option-item"><input type="checkbox" name="sector_industria"
+                                value="Vinyl / Wrap vehicular" id="sec_vinyl"><label for="sec_vinyl">Vinyl / Wrap
+                                vehicular</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="sector_industria" value="Otro"
+                                id="sec_otro"><label for="sec_otro">Otro</label></div>
+                        <div class="option-item"></div>
+                    </div>
+                </div>
+                <div id="error-sector" class="limit-error">Por favor, selecciona máximo 2 sectores.</div>
+            </div>
+
+            <!-- Pregunta 4: Número de empleados (Radios) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuál es el número de empleados de su empresa?</label>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="emp_1"
+                        name="num_empleados" value="1 a 10" required><label for="emp_1">1 a 10</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="emp_2"
+                        name="num_empleados" value="11 a 50"><label for="emp_2">11 a 50</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="emp_3"
+                        name="num_empleados" value="51 a 100"><label for="emp_3">51 a 100</label></div>
+                <div class="option-item" style="display:block;"><input type="radio" id="emp_4" name="num_empleados"
+                        value="100+"><label for="emp_4">100+</label></div>
+            </div>
+
+            <!-- Pregunta 5: Participación en decisiones de compra (Radios) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuál es tu participación en las decisiones de compra?</label>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="dec_1"
+                        name="decisiones_compra" value="Toma la decisión final" required><label for="dec_1">Toma la
+                        decisión final</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="dec_2"
+                        name="decisiones_compra" value="Apruebo"><label for="dec_2">Apruebo</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="dec_3"
+                        name="decisiones_compra" value="Recomienda"><label for="dec_3">Recomienda</label></div>
+                <div class="option-item" style="display:block;"><input type="radio" id="dec_4" name="decisiones_compra"
+                        value="No se involucra"><label for="dec_4">No se involucra</label></div>
+            </div>
+
+            <!-- Pregunta 6: Presupuesto de inversión (Radios) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuál es tu presupuesto de inversión para los próximos 12 meses?</label>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="pre_1"
+                        name="presupuesto" value="Menos de $50,000 USD" required><label for="pre_1">Menos de $50,000
+                        USD</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="pre_2"
+                        name="presupuesto" value="$50,001 - $100,000 USD"><label for="pre_2">$50,001 - $100,000
+                        USD</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="pre_3"
+                        name="presupuesto" value="$100,001 - $200,000 USD"><label for="pre_3">$100,001 - $200,000
+                        USD</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="pre_4"
+                        name="presupuesto" value="$200,001 - $50,0000 USD"><label for="pre_4">$200,001 - $500,000
+                        USD</label></div>
+                <div class="option-item" style="display:block; margin-bottom: 5px;"><input type="radio" id="pre_5"
+                        name="presupuesto" value="$500,001 - $1,000,000 USD"><label for="pre_5">$500,001 - $1,000,000
+                        USD</label></div>
+                <div class="option-item" style="display:block;"><input type="radio" id="pre_6" name="presupuesto"
+                        value="Más de $1M USD"><label for="pre_6">Más de $1M USD</label></div>
+            </div>
+
+            <!-- Pregunta 7: Cuándo planeas invertir (Select Dropdown) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuándo planeas invertir en maquinaria / equipos?</label>
+                <div class="field-group">
+                    <select name="tiempo_inversion" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="Durante el evento">Durante el evento</option>
+                        <option value="0-6 meses">0-6 meses</option>
+                        <option value="6-12 meses">6-12 meses</option>
+                        <option value="12 - 18 meses">12 - 18 meses</option>
+                        <option value="No estoy seguro">No estoy seguro</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pregunta 8: Productos de interés (Checkboxes libres) -->
+            <div class="question-block">
+                <label class="question-label">¿Cuáles son sus principales productos de interés? Marque todas las que
+                    apliquen</label>
+                <div class="options-grid">
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Impresión digital" id="prod_digital"><label for="prod_digital">Impresión
+                                digital</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Impresión textil y decoración de prendas" id="prod_textil_dec"><label
+                                for="prod_textil_dec">Impresión textil y decoración de prendas</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Maquinaria de serigrafía" id="prod_serigrafia"><label
+                                for="prod_serigrafia">Maquinaria de serigrafía</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Impresión Empaque y etiqueta" id="prod_empaque"><label
+                                for="prod_empaque">Impresión Empaque y etiqueta</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes" value="Impresión 3D"
+                                id="prod_3d"><label for="prod_3d">Impresión 3D</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Fabricación textil" id="prod_fab_textil"><label for="prod_fab_textil">Fabricación
+                                textil</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Decoración de interiores" id="prod_decoracion"><label
+                                for="prod_decoracion">Decoración de interiores</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Señalización y display" id="prod_senal"><label for="prod_senal">Señalización y
+                                display</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes" value="Wrapping"
+                                id="prod_wrap"><label for="prod_wrap">Wrapping</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Corte, grabado y acabado" id="prod_corte"><label for="prod_corte">Corte, grabado
+                                y acabado</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Medios y sustratos" id="prod_medios"><label for="prod_medios">Medios y
+                                sustratos</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Artículos promocionales" id="prod_promo"><label for="prod_promo">Artículos
+                                promocionales</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes"
+                                value="Tintas y consumibles" id="prod_tintas"><label for="prod_tintas">Tintas y
+                                consumibles</label></div>
+                        <div class="option-item"><input type="checkbox" name="productos_interes" value="Tampografía"
+                                id="prod_tampo"><label for="prod_tampo">Tampografía</label></div>
+                    </div>
+                    <div class="options-row">
+                        <div class="option-item"><input type="checkbox" name="productos_interes" value="Otro"
+                                id="prod_otro"><label for="prod_otro">Otro</label></div>
+                        <div class="option-item"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- POLÍTICA DE PRIVACIDAD -->
+            <div class="privacy-box">
+                <input type="checkbox" id="politica" required>
+                <label for="politica"> Al hacer clic en esta casilla, usted acepta los términos y condiciones y la <a
+                        href="#">Política de privacidad</a> del evento.</label>
+            </div>
+
+            <!-- BOTÓN ENVIAR -->
+            <button type="submit" class="btn-submit">REGÍSTRATE</button>
+            <br>
+            <a href="alumnos">alumnos</a>
+
+            <div class="support-text">
+                Si requieres soporte técnico con tu registro, enviar correo electrónico a <a
+                    href="mailto:fespa@infoexpo.com.mx">fespa@infoexpo.com.mx</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Validación en tiempo real del límite máximo de checkboxes para el Sector Industrial
+        const checkboxesSector = document.querySelectorAll('input[name="sector_industria"]');
+        const errorSector = document.getElementById('error-sector');
+
+        checkboxesSector.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const seleccionados = document.querySelectorAll('input[name="sector_industria"]:checked').length;
+                if (seleccionados > 2) {
+                    cb.checked = false; // Desmarca la que excede
+                    errorSector.style.display = 'block';
+                } else {
+                    errorSector.style.display = 'none';
+                }
+            });
+        });
+
+        function verificarFormulario(event) {
+    // 1. Validar que al menos se seleccione 1 sector de industria
+    const seleccionados = document.querySelectorAll('input[name="sector_industria"]:checked').length;
+    
+    if (seleccionados === 0) {
+        alert('Por favor, selecciona al menos 1 sector de la industria.');
+        event.preventDefault(); // Detiene el envío si no hay opciones marcadas
+        return false;
+    }
+
+    // 2. Si todo está correcto, NO mostramos ningún alert
+    // Retornamos true para que el navegador envíe el formulario a Flask directamente
+    return true; 
+}
+    </script>
+
+</body>
+
+</html>

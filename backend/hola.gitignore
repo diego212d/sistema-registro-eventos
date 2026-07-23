@@ -1,0 +1,13 @@
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Entornos virtuales (si usas uno)
+venv/
+env/
+
+# Carpetas temporales de tu app (como la de impresión)
+temp_print/
+
+# Archivos de variables de entorno con contraseñas
+.env

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro</title>
+    <link rel="stylesheet" href="../css/stylealum.css">
+</head>
+
+<body>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Formulario de registro</h2>
+            <p>Regístrate de forma rápida y segura</p>
+        </div>
+
+        <form action="/registro_alumno" method="POST" id="form-registro">
+
+            <!-- Campo: Nombre -->
+            <div class="form-group">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required minlength="3"
+                    pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+">
+                <span class="error-message">Por favor, introduce un nombre válido (mínimo 3 letras).</span>
+            </div>
+
+            <!-- Campo: Correo Electrónico -->
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                <span class="error-message">Introduce una dirección de correo electrónico válida.</span>
+            </div>
+
+
+            <!-- Botón de Envío -->
+            <button type="submit" id="registrarse" class="btn-submit">Registrarse</button>
+        </form>
+
+
+
+        <div class="form-footer">
+            ¿Ya tienes una cuenta? <a href="empresarios">empresarios</a>
+        </div>
+       
+    </div>
+    </div>
+
+    <script>
+        function validarPassword(event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorSpan = document.getElementById('password-error');
+
+            if (password !== confirmPassword) {
+                event.preventDefault(); // Evita que se envíe el formulario
+                errorSpan.style.display = 'block';
+                document.getElementById('confirm-password').style.borderColor = '#d93025';
+                document.getElementById('confirm-password').style.backgroundColor = '#fce8e6';
+                return false;
+            } else {
+                errorSpan.style.display = 'none';
+            }
+
+            alert('¡Formulario validado y enviado correctamente! (Simulación)');
+            return true;
+        }
+
+        // Limpiar el error de coincidencia de contraseña mientras el usuario escribe
+        document.getElementById('confirm-password').addEventListener('input', function () {
+            document.getElementById('password-error').style.display = 'none';
+        });
+    </script>
+  
+    <div>
+
+</body>
+
+</html>

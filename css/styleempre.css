@@ -1,0 +1,281 @@
+ * {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     font-family: 'Segoe UI', Arial, sans-serif;
+ }
+
+ body {
+     background-color: #f4f6f9;
+     color: #333;
+     line-height: 1.6;
+     padding: 20px;
+ }
+
+ .form-container {
+     max-width: 900px;
+     margin: 30px auto;
+     background: #ffffff;
+     border-radius: 8px;
+     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+     overflow: hidden;
+ }
+
+ .header-banner {
+     background-color: #33CCCC;
+     color: #ffffff;
+     padding: 25px 30px;
+     text-align: center;
+ }
+
+ .header-banner h1 {
+     font-size: 26px;
+     margin-bottom: 5px;
+ }
+
+ .header-banner p {
+     font-size: 14px;
+     opacity: 0.9;
+ }
+
+ .notice-bar {
+     background-color: #C1106D;
+     color: white;
+     padding: 10px 20px;
+     font-size: 13px;
+     text-align: right;
+     font-weight: bold;
+ }
+
+ form {
+     padding: 30px;
+ }
+
+ .section-title {
+     color: #0b2c70;
+     font-size: 18px;
+     font-weight: bold;
+     border-bottom: 2px solid #e2e8f0;
+     padding-bottom: 8px;
+     margin-top: 25px;
+     margin-bottom: 20px;
+ }
+
+ .section-title:first-of-type {
+     margin-top: 0;
+ }
+
+ /* Layout Grid de Fila */
+ .row {
+     display: table;
+     width: 100%;
+     table-layout: fixed;
+     margin-bottom: 15px;
+ }
+
+ .col {
+     display: table-cell;
+     padding: 0 10px;
+     vertical-align: bottom;
+ }
+
+ .col:first-child {
+     padding-left: 0;
+ }
+
+ .col:last-child {
+     padding-right: 0;
+ }
+
+ .w-33 {
+     width: 33.33%;
+ }
+
+ .w-50 {
+     width: 50%;
+ }
+
+ .w-100 {
+     width: 100%;
+     display: block;
+     padding: 0;
+ }
+
+ /* Estilos de los inputs clásicos de línea inferior */
+ .field-group {
+     margin-bottom: 20px;
+     position: relative;
+ }
+
+ .field-group label {
+     display: block;
+     font-size: 13px;
+     color: #718096;
+     margin-bottom: 4px;
+ }
+
+ .field-group input[type="text"],
+ .field-group input[type="email"],
+ .field-group input[type="tel"] {
+     width: 100%;
+     border: none;
+     border-bottom: 1.5px solid #cbd5e1;
+     padding: 8px 0;
+     font-size: 15px;
+     outline: none;
+     transition: border-color 0.3s;
+     background: transparent;
+ }
+
+ .field-group input:focus {
+     border-bottom-color: #0b2c70;
+ }
+
+ /* Selects estilizados */
+ .field-group select {
+     width: 100%;
+     border: 1px solid #cbd5e1;
+     border-radius: 4px;
+     padding: 10px;
+     font-size: 15px;
+     outline: none;
+     background-color: #fff;
+     color: #333;
+ }
+
+ .field-group select:focus {
+     border-color: #0b2c70;
+ }
+
+ /* Preguntas de opción múltiple (Verde FESPA) */
+ .question-block {
+     margin-bottom: 25px;
+ }
+
+ .question-label {
+     font-size: 15px;
+     font-weight: bold;
+     color: #044327;
+     /* Verde oscuro FESPA */
+     margin-bottom: 12px;
+     display: block;
+ }
+
+ .badge-info {
+     display: inline-block;
+     background-color: #edf2f7;
+     color: #4a5568;
+     font-size: 12px;
+     padding: 2px 8px;
+     border-radius: 4px;
+     margin-bottom: 8px;
+     font-weight: normal;
+ }
+
+ /* Opciones de Radio y Checkbox */
+ .options-grid {
+     display: table;
+     width: 100%;
+     table-layout: fixed;
+ }
+
+ .options-row {
+     display: table-row;
+ }
+
+ .option-item {
+     display: table-cell;
+     padding: 6px 10px 6px 0;
+     font-size: 14px;
+     color: #4a5568;
+     vertical-align: top;
+ }
+
+ .option-item input {
+     margin-right: 8px;
+     transform: scale(1.1);
+     vertical-align: middle;
+     cursor: pointer;
+ }
+
+ .option-item label {
+     cursor: pointer;
+     vertical-align: middle;
+ }
+
+ /* Términos y Condiciones */
+ .privacy-box {
+     background-color: #f8fafc;
+     border: 1px solid #e2e8f0;
+     border-radius: 6px;
+     padding: 15px;
+     margin-top: 30px;
+     margin-bottom: 25px;
+ }
+
+ .privacy-box input {
+     margin-right: 12px;
+     transform: scale(1.2);
+     float: left;
+     margin-top: 4px;
+ }
+
+ .privacy-box label {
+     font-size: 14px;
+     color: #334155;
+     display: block;
+     overflow: hidden;
+ }
+
+ .privacy-box a {
+     color: #0056b3;
+     text-decoration: none;
+     font-weight: bold;
+ }
+
+ .privacy-box a:hover {
+     text-decoration: underline;
+ }
+
+ /* Botón de Registro */
+ .btn-submit {
+     display: block;
+     width: 250px;
+     margin: 30px auto 10px auto;
+     background-color: #0056b3;
+     color: white;
+     border: none;
+     border-radius: 25px;
+     padding: 14px;
+     font-size: 16px;
+     font-weight: bold;
+     cursor: pointer;
+     text-align: center;
+     box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2);
+     transition: background-color 0.2s;
+ }
+
+ .btn-submit:hover {
+     background-color: #0b2c70;
+ }
+
+ .support-text {
+     text-align: center;
+     font-size: 13px;
+     color: #718096;
+     margin-top: 15px;
+ }
+
+ .support-text a {
+     color: #0056b3;
+     text-decoration: none;
+ }
+
+ /* Mensaje de error para checkboxes limitados */
+ .limit-error {
+     color: #d93025;
+     font-size: 13px;
+     display: none;
+     margin-top: 5px;
+     font-weight: bold;
+ }
