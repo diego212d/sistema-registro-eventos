@@ -546,11 +546,11 @@ def escanear():
 
         # 2. Lógica para ENTRADA
         if modo == 'entrada':
-            if asistencias_actuales >= 2:
+            if asistencias_actuales >= 1:
                 return responder_escaneo(
                     exito=False, 
                     mensaje="❌ LÍMITE ALCANZADO", 
-                    detalles=f"{nombre} ya ingresó {asistencias_actuales}/2 veces.", 
+                    detalles=f"{nombre} ya ingresó {asistencias_actuales}/1 veces.", 
                     pitido="error"
                 )
             
@@ -561,7 +561,7 @@ def escanear():
             return responder_escaneo(
                 exito=True, 
                 mensaje="✅ ENTRADA REGISTRADA", 
-                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas: {asistente.asistencias}/2</strong>", 
+                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas: {asistente.asistencias}/1</strong>", 
                 pitido="exito"
             )
 
@@ -582,7 +582,7 @@ def escanear():
             return responder_escaneo(
                 exito=True, 
                 mensaje="🚪 SALIDA REGISTRADA", 
-                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas activas: {asistente.asistencias}/2</strong>", 
+                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas activas: {asistente.asistencias}/1</strong>", 
                 pitido="exito"
             )
 
