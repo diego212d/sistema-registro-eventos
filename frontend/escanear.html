@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de acceso ZEBRA</title>
+</head>
+
+<body style="font-family: Arial; text-align: center; padding: 20px;">
+    <h2>Control de Acceso</h2>
+
+    <form action="/validar_qr" method="POST">
+        <!-- El autofocus es clave: el cursor estará listo para recibir el código de la Zebra -->
+        <input type="text" name="qr_data" id="qr_input" placeholder="Escanea el código QR aquí..." autofocus
+            style="font-size: 18px; padding: 10px; width: 80%;">
+    </form>
+
+    <script>
+        // Si el input pierde el foco, se lo devolvemos automáticamente para que nunca falle el escaneo
+        document.getElementById('qr_input').addEventListener('blur', function () {
+            setTimeout(() => this.focus(), 100);
+        });
+    </script>
+</body>
+
+</html>

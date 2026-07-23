@@ -5,7 +5,7 @@ import threading
 import subprocess
 import qrcode 
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import ARRAY
 from flask_mail import Mail, Message
@@ -45,6 +45,7 @@ class Alumno(db.Model):
     Correo = db.Column('Correo', ARRAY(db.String(50)), nullable=False)
     confirmado = db.Column('confirmado', db.Boolean, default=False)
     qr_code = db.Column('qr_code', db.LargeBinary, nullable=True)
+    asistencias = db.Column(db.Integer, default=0)      
 
 
 class Empresario(db.Model):
@@ -77,6 +78,7 @@ class Empresario(db.Model):
 
     confirmado = db.Column('confirmado', db.Boolean, default=False)
     qr_code = db.Column('qr_code', db.LargeBinary, nullable=True)
+    asistencias = db.Column(db.Integer, default=0)
 
 
 # ==========================================
@@ -139,7 +141,7 @@ def crear_diseno_gafete(bytes_qr, id_usuario, nombre_usuario):
         fnt_texto = ImageFont.load_default()
 
     # 3. Dibujar Encabezado y Folio
-    draw.text((30, 350), "EVENTO DE INNOVACION 2026", fill="black", font=fnt_titulo)
+    draw.text((30, 350), "BALLETE ELISA CARRILLO ", fill="black", font=fnt_titulo)
     draw.text((30, 400), f"Folio: {id_usuario}", fill="black", font=fnt_texto)
 
     # 4. Manejo Inteligente del Nombre Completo (Salto de línea si es largo)
@@ -170,7 +172,7 @@ def crear_diseno_gafete(bytes_qr, id_usuario, nombre_usuario):
     pos_qr_y = 530
     
     gafete.paste(qr_img, (pos_qr_x, pos_qr_y))
-    draw.text((pos_qr_x + 10, pos_qr_y + qr_alto + 15), "¡Escanea para entrar!", fill="black", font=fnt_texto)
+    draw.text((pos_qr_x + 10, pos_qr_y + qr_alto + 15), "", fill="black", font=fnt_texto)
 
     buffer_gafete = io.BytesIO()
     gafete.save(buffer_gafete, format="PNG")
@@ -498,7 +500,341 @@ def confirmar_email_generico(token):
 
     return "<h1>Usuario no encontrado.</h1>"
 
+@app.route('/validar_qr', methods=['POST'])
+def validar_qr():
+    qr_data = request.form.get('qr_data', '').strip()
+    
+    # Supongamos que el QR contiene el id del Empresario o Alumno
+    # Buscar si existe en Alumnos o Empresarios
+    empresario = Empresario.query.get(qr_data) if qr_data.isdigit() else None
+    
+    if empresario:
+        return f"<h1 style='color:green;'>ENTRADA PERMITIDA: {empresario.Nombre} {empresario.ApellidoPaterno}</h1><a href='/escanear'>Siguiente</a>"
+    else:
+        return "<h1 style='color:red;'>ACCESO DENEGADO / NO ENCONTRADO</h1><a href='/escanear'>Reintentar</a>"
 
+
+@app.route('/escanear', methods=['GET', 'POST'])
+def escanear():
+    if request.method == 'POST':
+        qr_data = request.form.get('qr_data', '').strip()
+        modo = request.form.get('modo', 'entrada') # 'entrada' o 'salida'
+        
+        asistente = None
+        tipo_usuario = ""
+        
+        if qr_data.isdigit():
+            id_num = int(qr_data)
+            asistente = Empresario.query.get(id_num)
+            tipo_usuario = "Empresario"
+            
+            if not asistente:
+                asistente = Alumno.query.get(id_num)
+                tipo_usuario = "Alumno"
+
+        # 1. Si NO existe el usuario
+        if not asistente:
+            return responder_escaneo(
+                exito=False, 
+                mensaje="❌ ACCESO DENEGADO", 
+                detalles=f'El ID "{qr_data}" no se encuentra registrado.', 
+                pitido="error"
+            )
+
+        nombre = f"{asistente.Nombre} {getattr(asistente, 'ApellidoPaterno', '')}".strip()
+        asistencias_actuales = getattr(asistente, 'asistencias', 0) or 0
+
+        # 2. Lógica para ENTRADA
+        if modo == 'entrada':
+            if asistencias_actuales >= 2:
+                return responder_escaneo(
+                    exito=False, 
+                    mensaje="❌ LÍMITE ALCANZADO", 
+                    detalles=f"{nombre} ya ingresó {asistencias_actuales}/2 veces.", 
+                    pitido="error"
+                )
+            
+            # Incrementar conteo
+            asistente.asistencias = asistencias_actuales + 1
+            db.session.commit()
+            
+            return responder_escaneo(
+                exito=True, 
+                mensaje="✅ ENTRADA REGISTRADA", 
+                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas: {asistente.asistencias}/2</strong>", 
+                pitido="exito"
+            )
+
+        # 3. Lógica para SALIDA
+        elif modo == 'salida':
+            if asistencias_actuales <= 0:
+                return responder_escaneo(
+                    exito=False, 
+                    mensaje="⚠️ SALIDA DENEGADA", 
+                    detalles=f"{nombre} no registra entradas activas.", 
+                    pitido="error"
+                )
+            
+            # Decrementar conteo
+            asistente.asistencias = asistencias_actuales - 1
+            db.session.commit()
+            
+            return responder_escaneo(
+                exito=True, 
+                mensaje="🚪 SALIDA REGISTRADA", 
+                detalles=f"{nombre} ({tipo_usuario})<br><br><strong style='font-size:22px;'>Entradas activas: {asistente.asistencias}/2</strong>", 
+                pitido="exito"
+            )
+
+    # Vista GET (Formulario principal)
+    return """
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Control de Acceso Zebra</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 15px; background: #f0f2f5; margin: 0; }
+            .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+            .btn-modo { padding: 15px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin: 5px; width: 45%; }
+            .modo-entrada { background-color: #28a745; color: white; }
+            .modo-salida { background-color: #dc3545; color: white; }
+            .inactivo { opacity: 0.3; }
+            input[type="text"] { font-size: 22px; padding: 12px; width: 85%; border-radius: 8px; border: 2px solid #007bff; text-align: center; margin-top: 15px; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2 style="color:#0b2c70;">📷 Control de Acceso</h2>
+            
+            <div>
+                <button id="btnEntrada" type="button" class="btn-modo modo-entrada" onclick="setModo('entrada')">🟢 ENTRADA</button>
+                <button id="btnSalida" type="button" class="btn-modo modo-salida inactivo" onclick="setModo('salida')">🔴 SALIDA</button>
+            </div>
+
+            <form action="/escanear" method="POST" style="margin-top: 15px;">
+                <input type="hidden" name="modo" id="input_modo" value="entrada">
+                <input type="text" name="qr_data" id="qr_input" placeholder="Escanea con la TC21..." autofocus autocomplete="off">
+            </form>
+        </div>
+
+        <script>
+            function setModo(modo) {
+                document.getElementById('input_modo').value = modo;
+                if (modo === 'entrada') {
+                    document.getElementById('btnEntrada').classList.remove('inactivo');
+                    document.getElementById('btnSalida').classList.add('inactivo');
+                } else {
+                    document.getElementById('btnSalida').classList.remove('inactivo');
+                    document.getElementById('btnEntrada').classList.add('inactivo');
+                }
+                document.getElementById('qr_input').focus();
+            }
+
+            const input = document.getElementById('qr_input');
+            input.focus();
+            document.addEventListener('click', () => input.focus());
+        </script>
+    </body>
+    </html>
+    """
+
+
+def responder_escaneo(exito, mensaje, detalles, pitido):
+    color_bg = "#d4edda" if exito else "#f8d7da"
+    color_texto = "#155724" if exito else "#721c24"
+    color_borde = "#c3e6cb" if exito else "#f5c6cb"
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Resultado Escaneo</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f0f2f5;">
+        <div style="background-color: {color_bg}; color: {color_texto}; padding: 30px 20px; border-radius: 12px; border: 3px solid {color_borde}; max-width: 400px; margin: auto;">
+            <h1 style="margin: 0; font-size: 28px;">{mensaje}</h1>
+            <p style="font-size: 18px; margin-top: 15px;">{detalles}</p>
+        </div>
+        <br>
+        <a href="/escanear" id="btnSiguiente" style="display: inline-block; padding: 18px 35px; background-color: #007bff; color: white; text-decoration: none; font-size: 22px; border-radius: 10px; font-weight: bold;">Escanear Siguiente</a>
+
+        <script>
+            // Sintetizador de audio Web Audio API
+            function reproducirPitido() {{
+                try {{
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const ctx = new AudioContext();
+                    
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    if ("{pitido}" === "exito") {{
+                        // Bip corto y agudo (Éxito)
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(880, ctx.currentTime); // Nota A5
+                        gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.15);
+                    }} else {{
+                        // Doble pitido grave (Error/Denegado)
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(150, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.8, ctx.currentTime);
+                        
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.25);
+
+                        // Segundo tono de error
+                        setTimeout(() => {{
+                            const ctx2 = new AudioContext();
+                            const osc2 = ctx2.createOscillator();
+                            const gain2 = ctx2.createGain();
+                            osc2.connect(gain2);
+                            gain2.connect(ctx2.destination);
+                            osc2.type = 'sawtooth';
+                            osc2.frequency.setValueAtTime(120, ctx2.currentTime);
+                            gain2.gain.setValueAtTime(0.8, ctx2.currentTime);
+                            osc2.start();
+                            osc2.stop(ctx2.currentTime + 0.3);
+                        }}, 300);
+                    }}
+                }} catch(e) {{
+                    console.log("Audio no soportado o bloqueado:", e);
+                }}
+            }}
+
+            // Reproducir inmediatamente
+            window.onload = function() {{
+                reproducirPitido();
+            }};
+        </script>
+    </body>
+    </html>
+    """
+    # Generador de sonidos vía sintetizador Web Audio API (No requiere archivos .mp3)
+    script_audio = """
+    <script>
+        function emitirSonido(tipo) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (tipo === 'exito') {
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+            } else {
+                // Pitido de Error (Grave y más largo)
+                osc.frequency.setValueAtTime(180, ctx.currentTime);
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            }
+        }
+        window.onload = function() {
+            emitirSonido('""" + pitido + """');
+        };
+    </script>
+    """
+
+    color_bg = "#d4edda" if exito else "#f8d7da"
+    color_texto = "#155724" if exito else "#721c24"
+    color_borde = "#c3e6cb" if exito else "#f5c6cb"
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Resultado Escaneo</title>
+        {script_audio}
+    </head>
+    <body style="font-family: Arial; text-align: center; padding: 20px; background: #f0f2f5;">
+        <div style="background-color: {color_bg}; color: {color_texto}; padding: 30px 20px; border-radius: 12px; border: 2px solid {color_borde}; max-width: 400px; margin: auto;">
+            <h1 style="margin: 0; font-size: 26px;">{mensaje}</h1>
+            <p style="font-size: 18px; margin-top: 15px;">{detalles}</p>
+        </div>
+        <br>
+        <a href="/escanear" style="display: inline-block; padding: 15px 30px; background-color: #007bff; color: white; text-decoration: none; font-size: 20px; border-radius: 8px; font-weight: bold;">Siguiente Escaneo</a>
+    </body>
+    </html>
+    """
+    # Si la Zebra (o el navegador) manda un código por POST:
+    if request.method == 'POST':
+        qr_data = request.form.get('qr_data', '').strip()
+        
+        # Buscar en Alumno o Empresario
+        asistente = None
+        tipo_usuario = ""
+        
+        if qr_data.isdigit():
+            id_num = int(qr_data)
+            asistente = Empresario.query.get(id_num)
+            tipo_usuario = "Empresario"
+            
+            if not asistente:
+                asistente = Alumno.query.get(id_num)
+                tipo_usuario = "Alumno"
+
+        if asistente:
+            nombre = f"{asistente.Nombre} {getattr(asistente, 'ApellidoPaterno', '')}".strip()
+            return f"""
+            <div style="font-family: Arial; text-align: center; padding: 40px; max-width: 500px; margin: auto;">
+                <div style="background-color: #d4edda; color: #155724; padding: 20px; border-radius: 10px; border: 2px solid #c3e6cb;">
+                    <h1 style="margin: 0; font-size: 32px;">✅ ACCESO PERMITIDO</h1>
+                    <h2 style="color: #333; margin-top: 15px;">{nombre}</h2>
+                    <p style="font-size: 18px; color: #555;">Tipo: <strong>{tipo_usuario}</strong> | ID: <strong>{qr_data}</strong></p>
+                </div>
+                <br>
+                <a href="/escanear" style="display: inline-block; padding: 15px 30px; background-color: #007bff; color: white; text-decoration: none; font-size: 20px; border-radius: 8px; font-weight: bold;">Escanear Siguiente</a>
+            </div>
+            """
+        else:
+            return f"""
+            <div style="font-family: Arial; text-align: center; padding: 40px; max-width: 500px; margin: auto;">
+                <div style="background-color: #f8d7da; color: #721c24; padding: 20px; border-radius: 10px; border: 2px solid #f5c6cb;">
+                    <h1 style="margin: 0; font-size: 32px;">❌ ACCESO DENEGADO</h1>
+                    <p style="font-size: 18px; color: #555;">El ID <strong>"{qr_data}"</strong> no se encuentra en la base de datos.</p>
+                </div>
+                <br>
+                <a href="/escanear" style="display: inline-block; padding: 15px 30px; background-color: #dc3545; color: white; text-decoration: none; font-size: 20px; border-radius: 8px; font-weight: bold;">Reintentar</a>
+            </div>
+            """
+
+    # Si entras a la URL desde el navegador (GET), muestra la pantalla del escáner:
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Control de Acceso Zebra</title>
+    </head>
+    <body style="font-family: Arial; text-align: center; padding: 20px; background-color: #f4f6f9;">
+        <h2 style="color: #0b2c70;">📷 Control de Acceso Zebra</h2>
+        <p style="color: #666;">Apunta con la TC21 y presiona el botón de escaneo</p>
+        
+        <form action="/escanear" method="POST" style="margin-top: 30px;">
+            <input type="text" name="qr_data" id="qr_input" placeholder="Listo para escanear..." autofocus autocomplete="off" style="font-size: 20px; padding: 15px; width: 80%; border-radius: 8px; border: 2px solid #0b2c70; text-align: center;">
+        </form>
+
+        <script>
+            // Asegura que el cuadro de texto nunca pierda el foco
+            const input = document.getElementById('qr_input');
+            input.focus();
+            document.addEventListener('click', () => input.focus());
+        </script>
+    </body>
+    </html>
+    """
 # ==========================================
 # PUNTO DE ENTRADA
 # ==========================================
